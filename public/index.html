@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncUp — Master Desktop Build</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<body>
+
+<div class="app-container">
+  <div class="topbar" id="topbar" style="display:none;">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div class="name">SyncUp</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div id="gcalStatusChip" style="display:none;"></div>
+      <div class="user-chip" id="userChip" onclick="switchRole()">
+        <span class="dot"></span><span id="userChipLabel">You</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar" id="navbar-client" style="display:none;">
+    <button class="navbtn" data-screen="partners" onclick="showScreen('partners')"><span class="ic">🔎</span> Partners</button>
+    <button class="navbtn" data-screen="profile" onclick="showScreen('profile')"><span class="ic">🧾</span> Resume</button>
+    <button class="navbtn" data-screen="learning" onclick="showScreen('learning')"><span class="ic">📚</span> Learning</button>
+    <button class="navbtn" data-screen="calendar" onclick="showScreen('calendar')"><span class="ic">🗓️</span> Schedule</button>
+    <button class="navbtn" data-screen="progress" onclick="showScreen('progress')"><span class="ic">📈</span> Progress</button>
+    <button class="navbtn" data-screen="expenses" onclick="showScreen('expenses')"><span class="ic">💰</span> Expenses</button>
+  </div>
+
+  <div class="navbar" id="navbar-advisor" style="display:none;">
+    <button class="navbtn" data-screen="dashboard" onclick="showScreen('dashboard')"><span class="ic">📥</span> Requests</button>
+    <button class="navbtn" data-screen="matches" onclick="showScreen('matches')"><span class="ic">🤝</span> Matches</button>
+    <button class="navbtn" data-screen="referrals" onclick="showScreen('referrals')"><span class="ic">🔗</span> Referrals</button>
+    <button class="navbtn" data-screen="learning" onclick="showScreen('learning')"><span class="ic">📚</span> Learning</button>
+    <button class="navbtn" data-screen="calendar" onclick="showScreen('calendar')"><span class="ic">🗓️</span> Schedule</button>
+    <button class="navbtn" data-screen="progress" onclick="showScreen('progress')"><span class="ic">📈</span> Progress</button>
+    <button class="navbtn" data-screen="expenses" onclick="showScreen('expenses')"><span class="ic">💰</span> Expenses</button>
+  </div>
+
+  <div class="content" id="content">
+
+    <!-- LOGIN -->
+    <div class="screen active" id="screen-login">
+      <div class="login-wrap">
+        <div class="login-logo">S</div>
+        <h1 class="login-title">Welcome to SyncUp</h1>
+        <div class="page-sub">Partnerships, learning, and scheduling — all in sync.</div>
+        <button class="auth-btn google" onclick="login('Google')"><span class="icon-circle">G</span> Continue with Google</button>
+        <button class="auth-btn linkedin" onclick="login('LinkedIn')"><span class="icon-circle">in</span> Continue with LinkedIn</button>
+      </div>
+    </div>
+
+    <!-- ROLE -->
+    <div class="screen" id="screen-role">
+      <div class="login-wrap">
+        <div class="login-logo">S</div>
+        <h1 class="login-title">How are you using SyncUp?</h1>
+        <div class="page-sub" id="roleWelcome">Choose your account type to continue.</div>
+        <button class="auth-btn" onclick="chooseRole('client')">
+          <span class="icon-circle" style="background:var(--accent);">🧑</span>
+          <span style="text-align:left;"><strong style="display:block;">I'm a Client</strong><span style="font-size:12px;color:var(--muted);font-weight:400;">Find partners, send your resume, track replies</span></span>
+        </button>
+        <button class="auth-btn" onclick="chooseRole('advisor')">
+          <span class="icon-circle" style="background:var(--pending);">🧭</span>
+          <span style="text-align:left;"><strong style="display:block;">I'm an Advisor</strong><span style="font-size:12px;color:var(--muted);font-weight:400;">Review incoming requests and manage matches</span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PARTNERS -->
+    <div class="screen" id="screen-partners">
+      <h1 class="page-title">Find Partners</h1>
+      <div class="page-sub">Search and filter the partner ecosystem.</div>
+      <div id="dailyBriefClient"></div>
+      <div class="search-box">
+        <input type="text" id="partnerSearch" placeholder="Search by keyword, name...">
+        <input type="text" id="customNicheFilter" placeholder="Custom Niche (e.g. AI Agents)">
+      </div>
+      <div class="filter-row" id="filterRow"></div>
+      <div class="grid-layout" id="partnerList"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="screen" id="screen-profile">
+      <h1 class="page-title">My Resume</h1>
+      <div class="page-sub">Fill this once, send it to any partner in one tap.</div>
+      <div style="display:flex; gap:24px; flex-wrap:wrap;">
+        <div class="card" style="flex: 2; min-width: 300px;">
+          <div class="field"><label>Full Name</label><input id="p-name" type="text" value="Alex Tan"></div>
+          <div class="field"><label>Email</label><input id="p-email" type="email" value="alex.tan@email.com"></div>
+          <div class="field"><label>Phone Number</label><input id="p-phone" type="tel" value="+60 12-345 6789"></div>
+          <div class="field"><label>Experience</label><textarea id="p-exp">3 years in partnership coordination and stakeholder outreach.</textarea></div>
+          <button class="btn secondary" style="margin-bottom:12px;" onclick="improveResume()">✨ Improve with AI</button>
+          <div id="aiResumeSuggestion"></div>
+          <div class="field">
+            <label>Supporting Evidence</label>
+            <input type="file" id="p-evidence-input" multiple style="display:none;" onchange="addEvidence(this.files)">
+            <button class="btn secondary" onclick="document.getElementById('p-evidence-input').click()">📎 Attach files / links</button>
+            <div id="evidenceList" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+          <button class="btn block" onclick="saveProfile()">Save Resume</button>
+        </div>
+        <div class="card" style="flex: 1; min-width: 250px; align-self:flex-start;">
+          <div style="font-weight:700;font-size:16px;margin-bottom:12px;">My Submissions</div>
+          <div id="mySubmissions"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADVISOR DASHBOARD -->
+    <div class="screen" id="screen-dashboard">
+      <h1 class="page-title">Incoming Requests</h1>
+      <div class="page-sub">Review client submissions. Declines are wiped instantly.</div>
+      <div id="dailyBriefAdvisor"></div>
+      <div class="grid-layout" id="dashboardList"></div>
+    </div>
+
+    <!-- MATCHES -->
+    <div class="screen" id="screen-matches">
+      <h1 class="page-title">My Matches & Analytics</h1>
+      <div class="page-sub">Clients you've accepted. Contact info is shared both ways.</div>
+      <div class="subtabs">
+        <div class="subtab active" id="subtab-matches" onclick="switchMatchTab('matches')">🤝 Matches</div>
+        <div class="subtab" id="subtab-analytics" onclick="switchMatchTab('analytics')">📊 Analytics</div>
+      </div>
+      <div class="subscreen active" id="sub-matches">
+        <div id="followupSuggestions"></div>
+        <div class="grid-layout" id="matchesList"></div>
+      </div>
+      <div class="subscreen" id="sub-analytics">
+        <div id="analyticsContent"></div>
+      </div>
+    </div>
+
+    <!-- REFERRALS (NEW) -->
+    <div class="screen" id="screen-referrals">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h1 class="page-title">Referrals & Introductions</h1>
+          <div class="page-sub">Track ecosystem connections you've brokered. Surface the right partner at the right moment.</div>
+        </div>
+        <button class="btn" onclick="openNewReferralSheet()">+ Log Referral</button>
+      </div>
+      <div id="referralAiInsight"></div>
+      <div class="card">
+        <div style="font-weight:700;font-size:16px;margin-bottom:16px;">Referral Ledger</div>
+        <div id="referralList"><div class="empty-state">No referrals logged yet.</div></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div style="font-weight:700;font-size:16px;margin-bottom:12px;">🌐 Ecosystem Map</div>
+        <div id="ecosystemSummary" style="font-size:13px;color:var(--muted);">Log referrals to build your ecosystem map.</div>
+      </div>
+    </div>
+
+    <!-- LEARNING -->
+    <div class="screen" id="screen-learning">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h1 class="page-title">Learning & Development</h1>
+          <div class="page-sub">Log what you learn — AI tracks growth and suggests what's next. CPD badges unlock automatically.</div>
+        </div>
+        <button class="btn" onclick="openLearningLogSheet()">+ Log Learning</button>
+      </div>
+      <div id="learningCoach"></div>
+      <div id="cpdBadges"></div>
+      <div class="stat-grid" id="learningStats"></div>
+      <div class="grid-layout" id="learningList" style="margin-top:20px;"></div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="screen" id="screen-calendar">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h1 class="page-title">Schedule</h1>
+          <div class="page-sub">Your shared calendar with AI Meeting Notes. Set functional alarms to stay on track.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button id="gcalSyncBtn" class="gcal-btn" onclick="connectGoogleCalendar()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Sync Google Calendar
+          </button>
+          <button class="btn" onclick="openNewEvent(null)">+ Add Event</button>
+        </div>
+      </div>
+      <div id="gcalImportedEvents"></div>
+      <div class="card">
+        <div class="cal-top">
+          <div class="cal-nav">
+            <button onclick="calMove(-1)">‹</button>
+            <div class="cal-month" id="calMonthLabel"></div>
+            <button onclick="calMove(1)">›</button>
+          </div>
+          <button class="btn secondary" onclick="openQuickEvent()">⚡ Quick Add</button>
+        </div>
+        <div class="cal-grid" id="calDowRow"></div>
+        <div class="cal-grid" id="calGrid" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="screen" id="screen-progress">
+      <h1 class="page-title">My Progress</h1>
+      <div class="page-sub">Track your schedule completion and productivity over time.</div>
+      <div id="progressContainer"></div>
+    </div>
+
+    <!-- EXPENSES -->
+    <div class="screen" id="screen-expenses">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+          <h1 class="page-title">Expense Tracker</h1>
+          <div class="page-sub">Log client meetings, software tools, or operational costs. AI analyses your spending patterns.</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px; color:var(--muted); text-transform:uppercase;">Total Expenses</div>
+          <div class="stat-num" style="color:var(--pending);" id="expenseTotal">$0.00</div>
+        </div>
+      </div>
+      <div id="expenseAiPanel"></div>
+      <div style="display:flex; gap:20px; flex-wrap:wrap;">
+        <div class="card" style="flex:1; min-width:280px; align-self:flex-start;">
+          <h3 style="margin-top:0;">Add New Expense</h3>
+          <div class="field"><label>Description</label><input type="text" id="exp-desc" placeholder="e.g. n8n Subscription"></div>
+          <div class="field"><label>Amount ($)</label><input type="number" id="exp-amount" placeholder="0.00" step="0.01"></div>
+          <div class="field"><label>Category</label><select id="exp-cat"><option>Software & Tools</option><option>Meetings</option><option>Operations</option><option>Other</option></select></div>
+          <button class="btn block" onclick="addExpense()">+ Log Expense</button>
+          <button class="btn secondary block" style="margin-top:10px;" onclick="runAiExpenseAnalysis()">🤖 AI Expense Analysis</button>
+        </div>
+        <div class="card" style="flex:2; min-width:400px;">
+          <h3 style="margin-top:0;">Ledger</h3>
+          <div id="expenseList"><div class="empty-state">No expenses tracked yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- OVERLAYS (all originals kept) -->
+<div class="overlay" id="sendOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('sendOverlay')">✕</button></div>
+    <h2 id="sendPartnerName">Send to Partner</h2>
+    <div class="sheet-sub" id="sendPartnerMeta"></div>
+    <div class="card" style="background:var(--panel-soft);">
+      <div style="font-size:14px;"><strong id="reviewName"></strong></div>
+      <div style="font-size:13px;color:var(--muted);margin-top:4px;" id="reviewEmail"></div>
+      <div style="font-size:13px;color:var(--muted);" id="reviewPhone"></div>
+      <div style="font-size:13px;margin-top:8px;" id="reviewExp"></div>
+    </div>
+    <button class="btn block" id="confirmSendBtn" style="margin-top:16px;">Send My Details</button>
+  </div>
+</div>
+
+<div class="overlay" id="contactOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('contactOverlay')">✕</button></div>
+    <h2>You're Matched 🎉</h2>
+    <div class="sheet-sub">Reach out directly.</div>
+    <div class="card" id="contactCardBody"></div>
+    <button class="btn block" onclick="closeSheet('contactOverlay')" style="margin-top:16px;">Done</button>
+  </div>
+</div>
+
+<div class="overlay" id="newEventOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('newEventOverlay')">✕</button></div>
+    <h2 id="eventSheetTitle">New Event</h2>
+    <div class="field"><label>Name</label><input id="ev-name" type="text" placeholder="e.g. Partner call"></div>
+    <div style="display:flex;gap:12px;">
+      <div class="field" style="flex:1;"><label>Date</label><input id="ev-date" type="date"></div>
+      <div class="field" style="flex:1;"><label>Time</label><input id="ev-time" type="time"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="ev-notes" placeholder="Optional details"></textarea></div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:14px;color:var(--ink);">
+        <input type="checkbox" id="ev-alarm" style="width:20px; height:20px;"> Enable functional alarm (Audio + Notification)
+      </label>
+    </div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:14px;color:var(--ink);">
+        <input type="checkbox" id="ev-gcal-push" style="width:20px; height:20px;"> Push to Google Calendar
+      </label>
+    </div>
+    <button class="btn block" id="eventSaveBtn" onclick="saveNewEvent()">Save Event</button>
+  </div>
+</div>
+
+<div class="overlay" id="quickEventOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('quickEventOverlay')">✕</button></div>
+    <h2>Quick Event</h2>
+    <div style="display:flex;gap:12px;">
+      <div class="field" style="flex:1;"><label>Time</label><input id="q-time" type="time"></div>
+      <div class="field" style="flex:1;"><label>Date</label><input id="q-date" type="date"></div>
+    </div>
+    <div class="field"><label>What</label><input id="q-name" type="text" placeholder="Task to do"></div>
+    <button class="btn block" onclick="saveQuickEvent()">Add</button>
+  </div>
+</div>
+
+<div class="overlay" id="dayOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('dayOverlay')">✕</button></div>
+    <h2 id="dayTitle">Day</h2>
+    <div id="dayList" style="margin-bottom:16px;"></div>
+    <button class="btn block secondary" id="addFromDayBtn">+ Add event to this day</button>
+  </div>
+</div>
+
+<div class="overlay" id="meetingNotesOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('meetingNotesOverlay')">✕</button></div>
+    <h2>🎤 AI Meeting Notes</h2>
+    <div class="sheet-sub" id="notesEventName">Event</div>
+    <div class="field">
+      <label>Transcript / notes</label>
+      <textarea id="notes-raw" rows="6" placeholder="Paste meeting notes here, or type as if dictating..."></textarea>
+    </div>
+    <button class="btn secondary block" style="margin-bottom:12px;" onclick="generateMeetingSummary()">✨ Generate AI Summary</button>
+    <div id="meetingSummaryPreview"></div>
+    <button class="btn block" style="margin-top:16px;" onclick="saveMeetingNotes()">Save Notes</button>
+  </div>
+</div>
+
+<div class="overlay" id="learningLogOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('learningLogOverlay')">✕</button></div>
+    <h2>Log Learning</h2>
+    <div class="field"><label>Title</label><input id="lg-title" type="text" placeholder="e.g. System Design Architecture"></div>
+    <div style="display:flex;gap:10px;">
+      <div class="field" style="flex:1;"><label>Type</label><select id="lg-type"><option>Course</option><option>Webinar</option><option>Article</option><option>Workshop</option></select></div>
+      <div class="field" style="flex:1;"><label>Hours</label><input id="lg-hours" type="number" min="0" step="0.5" value="1"></div>
+    </div>
+    <div class="field"><label>Skill tags (comma separated)</label><input id="lg-tags" type="text" list="skillTagOptions" placeholder="e.g. AI Agents, Operations"><datalist id="skillTagOptions"></datalist></div>
+    <div class="field"><label>Date</label><input id="lg-date" type="date"></div>
+    <button class="btn block" onclick="saveLearningLog()">Save Log</button>
+  </div>
+</div>
+
+<!-- NEW: Referral Sheet -->
+<div class="overlay" id="referralOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('referralOverlay')">✕</button></div>
+    <h2>Log Referral / Introduction</h2>
+    <div class="sheet-sub">Track who you connected and why.</div>
+    <div class="field"><label>Client / Party A</label><input id="ref-a" type="text" placeholder="e.g. Alex Tan"></div>
+    <div class="field"><label>Partner / Party B</label><input id="ref-b" type="text" placeholder="e.g. Maria Lopez"></div>
+    <div class="field"><label>Introduction Type</label>
+      <select id="ref-type">
+        <option>Direct Referral</option>
+        <option>Warm Introduction</option>
+        <option>Cold Introduction</option>
+        <option>Partnership Brokered</option>
+      </select>
+    </div>
+    <div class="field"><label>Context / Notes</label><textarea id="ref-notes" placeholder="Why did you connect them? What outcome do you expect?"></textarea></div>
+    <div class="field"><label>Date</label><input id="ref-date" type="date"></div>
+    <button class="btn block" onclick="saveReferral()">Log It</button>
+  </div>
+</div>
+
+<!-- NEW: Google Calendar Connect Sheet -->
+<div class="overlay" id="gcalOverlay">
+  <div class="sheet">
+    <div class="close-row"><button class="close-x" onclick="closeSheet('gcalOverlay')">✕</button></div>
+    <h2>🗓️ Google Calendar</h2>
+    <div class="sheet-sub">Sync your SyncUp schedule with Google Calendar.</div>
+    <div style="background:var(--panel-soft);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">In a production app, this would use Google OAuth 2.0. For this demo, we simulate the connection and show how events would sync.</div>
+      <div class="field"><label>Your Google Email</label><input id="gcal-email" type="email" placeholder="you@gmail.com" value="alex.tan@gmail.com"></div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-weight:700;font-size:14px;margin-bottom:8px;">What syncs:</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.8;">
+        ✅ Events you create in SyncUp<br>
+        ✅ AI-generated action items from meeting notes<br>
+        ✅ Partner meeting reminders<br>
+        ⬡ Google events imported into SyncUp
+      </div>
+    </div>
+    <button class="gcal-btn" style="width:100%;justify-content:center;padding:14px;" onclick="confirmGcalConnect()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Authorise & Connect
+    </button>
+  </div>
+</div>
+
+
+<!-- App config: point this at your deployed backend if not localhost:4000 -->
+<script>window.SYNCUP_API_BASE = window.SYNCUP_API_BASE || 'http://localhost:4000';</script>
+
+<!-- Core -->
+<script src="js/api.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/state.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/gcal.js"></script>
+<script src="js/alarms.js"></script>
+
+<!-- Feature modules -->
+<script src="js/partners.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/matches.js"></script>
+<script src="js/referrals.js"></script>
+<script src="js/learning.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/expenses.js"></script>
+
+<!-- Bootstrap (must load last) -->
+<script src="js/init.js"></script>
+</body>
+</html>
